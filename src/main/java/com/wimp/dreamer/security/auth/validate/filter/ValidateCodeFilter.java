@@ -48,13 +48,14 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     /**
      * 验证请求url与配置的url是否匹配的工具类
      */
-    private AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private static final String GET = "get";
 
     /**
      * 初始化要拦截的url配置信息
      * 初始化参数，form类型配置图片验证码，可进行扩展
+     *
      * @throws ServletException the servlet exception
      */
     @Override
@@ -81,8 +82,9 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
 
     /**
      * 获取验证类型
-     * @param request
-     * @return
+     *
+     * @param request 请求
+     * @return ValidateCodeType
      */
     private ValidateCodeType getValidateCodeType(HttpServletRequest request) {
         ValidateCodeType result = null;

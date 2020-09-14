@@ -22,7 +22,7 @@ public interface SecurityConstants {
      */
     String DEFAULT_SIGN_IN_PROCESSING_URL_FORM = "/auth/form";
 
-    String DEFAULT_SIGN_IN_PROCESSING_URL_TPOS = "/auth/tpos";
+    String DEFAULT_SIGN_IN_PROCESSING_URL_THIRD = "/auth/third";
 
     /**
      * 验证图片验证码时，http请求中默认的携带图片验证码信息的参数的名称

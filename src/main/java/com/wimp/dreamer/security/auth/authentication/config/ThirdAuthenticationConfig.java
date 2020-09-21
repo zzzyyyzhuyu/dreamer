@@ -2,8 +2,6 @@ package com.wimp.dreamer.security.auth.authentication.config;
 
 import com.wimp.dreamer.security.auth.authentication.filter.ThirdAuthenticationFilter;
 import com.wimp.dreamer.security.auth.authentication.provider.ThirdAuthenticationProvider;
-import com.wimp.dreamer.security.auth.authentication.token.ThirdAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +12,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.UUID;
 
 /**
@@ -23,14 +23,15 @@ import java.util.UUID;
  * <p>
  * 第三方三方登录配置（自定义）
  */
+@Component
 public class ThirdAuthenticationConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-    @Autowired
+    @Resource
     private AuthenticationSuccessHandler pcAuthenticationSuccessHandler;
-    @Autowired
+    @Resource
     private AuthenticationFailureHandler pcAuthenticationFailureHandler;
-    @Autowired
+    @Resource
     private UserDetailsService userDetailsService;
-    @Autowired
+    @Resource
     private PersistentTokenRepository persistentTokenRepository;
 
     @Override

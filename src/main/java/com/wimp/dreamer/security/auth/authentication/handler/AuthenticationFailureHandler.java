@@ -22,7 +22,7 @@ import java.io.IOException;
  * <p>
  *  认证失败handler
  */
-@Component("pcAuthenticationSuccessHandler")
+@Component("pcAuthenticationFailureHandler")
 public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     @Resource

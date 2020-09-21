@@ -10,10 +10,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author zy
@@ -31,7 +29,7 @@ public class ThirdAuthenticationFilter extends AbstractAuthenticationProcessingF
     private boolean postOnly = true;
 
     public ThirdAuthenticationFilter() {
-        super(new AntPathRequestMatcher(SecurityConstants.DEFAULT_SIGN_IN_PROCESSING_URL_TPOS, "POST"));
+        super(new AntPathRequestMatcher(SecurityConstants.DEFAULT_SIGN_IN_PROCESSING_URL_THIRD, "POST"));
     }
 
     @Override

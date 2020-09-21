@@ -1,0 +1,70 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+    remoteip:
+      remote-ip-header: x-forwarded-for
+  forward-headers-strategy: framework
+spring:
+  application:
+    name: dreamer
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${jdbc.url:127.0.0.1}:${jdbc.port:3306}/dreamer?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    username: ${jdbc.username:root}
+    password: ${jdbc.password:123456}
+    filters: stat,wall
+    druid:
+      initial-size: 2
+      min-idle: 10
+      max-active: 10
+      test-on-borrow: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      web-stat-filter:
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      stat-view-servlet:
+        allow:
+        login-username: admin
+        login-password: admin
+  redis:
+    database: 0
+    host: ${redis.host:127.0.0.1}
+    port: ${redis.port:17328}
+    password: ${redis.password:123!@#qwe}
+    timeout: 3000
+    jedis:
+      pool:
+        max-active: 20
+        max-wait: -1
+  aop:
+    proxy-target-class: true
+    auto: true
+  mvc:
+    format:
+      date: yyyy-MM-dd HH:mm:ss
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+
+dreamer:
+  oauth2:
+    jwtSigningKey: dreamer
+    tokenRefreshUrl:  http://127.0.0.1:${server.port}/oauth/token
+    oauth2:
+      accessTokenValidateSeconds: 7200
+      refreshTokenValiditySeconds: 2592000
+      clientSecret: dreamClientSecret
+      scope: "*"
+      clientIds: dreamer-client-auth
+security:
+  oauth2:
+    client:
+      clientId: dreamer-client-auth
+      clientSecret: dreamClientSecret
+      access-token-uri: http://127.0.0.1:${server.port}/oauth/token
+      user-authorization-uri: http://127.0.0.1:${server.port}/oauth/authorize
+    resource:
+      id: dreamer-client-auth
+      filter-order: 3

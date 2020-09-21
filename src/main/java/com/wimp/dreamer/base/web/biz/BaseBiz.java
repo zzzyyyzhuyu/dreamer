@@ -9,6 +9,7 @@ import com.wimp.dreamer.base.utils.EntityUtils;
 import com.wimp.dreamer.base.utils.Query;
 import com.wimp.dreamer.base.utils.ReflectionUtils;
 import com.wimp.dreamer.base.web.constant.WebConstant;
+import com.wimp.dreamer.security.auth.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.entity.EntityColumn;
@@ -31,10 +32,10 @@ import java.util.Map;
  * <p>
  * 通用Biz
  */
-public abstract class BaseBiz<M extends Mapper<T>, T> {
+public abstract class BaseBiz<M extends Mapper<T>, T>{
 
     @Resource
-    private M mapper;
+    protected M mapper;
 
     public void setMapper(M mapper) {
         this.mapper = mapper;

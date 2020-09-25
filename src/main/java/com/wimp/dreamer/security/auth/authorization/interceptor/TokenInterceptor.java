@@ -52,6 +52,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = StringUtils.substringAfter(authorization, "Bearer ");
+        //TODO oauth2过期机制
         LoginAuthDto loginUser = (LoginAuthDto) redisUtil.get(RedisUtil.ACCESS_TOKEN_KEY+token);
         if (loginUser == null) {
             return true;

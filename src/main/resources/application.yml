@@ -30,9 +30,9 @@ spring:
         login-password: admin
   redis:
     database: 0
-    host: ${redis.host:127.0.0.1}
-    port: ${redis.port:17328}
-    password: ${redis.password:123!@#qwe}
+    host: ${redis.host:192.168.100.230}
+    port: ${redis.port:6379}
+    password: ${redis.password:zszshjdhcfwq}
     timeout: 3000
     jedis:
       pool:
@@ -68,3 +68,25 @@ security:
     resource:
       id: dreamer-client-auth
       filter-order: 3
+
+logging:
+  level:
+    root: debug
+    org:
+      springframework:
+        boot:
+          autoconfigure: error
+  file:
+    name: ${spring.application.name}.log
+    path: logs/
+mybatis:
+  type-aliases-package: com.wimp.dreamer
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

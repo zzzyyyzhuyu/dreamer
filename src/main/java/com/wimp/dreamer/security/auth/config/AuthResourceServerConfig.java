@@ -3,12 +3,14 @@ package com.wimp.dreamer.security.auth.config;
 import com.wimp.dreamer.security.auth.authentication.config.FormAuthenticationConfig;
 import com.wimp.dreamer.security.auth.authentication.config.ThirdAuthenticationConfig;
 import com.wimp.dreamer.security.auth.authorization.manager.AuthorizationConfigManager;
+import com.wimp.dreamer.security.auth.exception.translator.DreamerWebResponseExceptionTranslator;
 import com.wimp.dreamer.security.auth.validate.config.ValidateCodeSecurityConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -55,6 +57,9 @@ public class AuthResourceServerConfig implements ResourceServerConfigurer {
     private ValidateCodeSecurityConfig validateCodeSecurityConfig;
 
     @Resource
+    private DreamerWebResponseExceptionTranslator dreamerWebResponseExceptionTranslator;
+
+    @Resource
     private DataSource dataSource;
 
     /**
@@ -72,6 +77,9 @@ public class AuthResourceServerConfig implements ResourceServerConfigurer {
     @Override
     public void configure(ResourceServerSecurityConfigurer configurer) throws Exception {
         configurer.expressionHandler(pcSecurityExpressionHandler);
+        OAuth2AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+        authenticationEntryPoint.setExceptionTranslator(dreamerWebResponseExceptionTranslator);
+        configurer.authenticationEntryPoint(authenticationEntryPoint);
     }
 
     @Override
@@ -86,4 +94,6 @@ public class AuthResourceServerConfig implements ResourceServerConfigurer {
 
         authorizationConfigManager.config(http.authorizeRequests());
     }
+
+
 }

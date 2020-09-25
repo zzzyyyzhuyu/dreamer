@@ -42,7 +42,7 @@ public class ValidateCodeProcessorHolder {
         //延迟加载认证器
         if (this.validateCodeProcessors == null) {
             synchronized (this) {
-                validateCodeProcessors = new HashMap<>();
+                validateCodeProcessors = new HashMap<>(2);
                 Map<String, ValidateCodeProcessor> validateCodeProcessorsMap = springContextAware.getApplicationContext().getBeansOfType(ValidateCodeProcessor.class);
                 if (validateCodeProcessorsMap != null) {
                     for (ValidateCodeProcessor cp : validateCodeProcessorsMap.values()) {

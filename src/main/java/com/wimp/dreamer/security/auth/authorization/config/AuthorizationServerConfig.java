@@ -4,8 +4,10 @@ import com.wimp.dreamer.security.auth.authorization.handler.DreamerLogoutSuccess
 import com.wimp.dreamer.security.auth.authorization.properties.OAuth2Properties;
 import com.wimp.dreamer.security.auth.authorization.provider.RestClientDetailsServiceImpl;
 import com.wimp.dreamer.security.auth.authorization.token.JwtTokenEnhancer;
+import com.wimp.dreamer.security.auth.exception.translator.DreamerWebResponseExceptionTranslator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +33,7 @@ import java.util.List;
  * @date 2020/9/16
  * <p>
  *  授权服务器配置
+ *  bean注入顺序问题（同一个类内，@Resource可能不生效）
  */
 @Component
 @EnableAuthorizationServer
@@ -38,9 +41,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Resource
     private OAuth2Properties oAuth2Properties;
-
-    @Resource
-    private TokenStore tokenStore;
 
     @Resource
     private AuthenticationManager authenticationManager;
@@ -52,10 +52,67 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private RestClientDetailsServiceImpl restClientDetailsService;
 
     @Resource
+    private DreamerWebResponseExceptionTranslator dreamerWebResponseExceptionTranslator;
+
+
     private JwtAccessTokenConverter jwtAccessTokenConverter;
 
-    @Resource
+    private TokenStore tokenStore;
+
     private TokenEnhancer jwtTokenEnhancer;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Jwt access token converter jwt access token converter.
+     *
+     * @return the jwt access token converter
+     */
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setSigningKey(oAuth2Properties.getJwtSigningKey());
+        return jwtAccessTokenConverter;
+    }
+
+    /**
+     * Jwt token store token store.
+     * 延迟注册
+     * @return the token store
+     */
+    @Bean
+    @DependsOn("jwtAccessTokenConverter")
+    public TokenStore jwtTokenStore() {
+        tokenStore =  new JwtTokenStore(jwtAccessTokenConverter);
+        return tokenStore;
+    }
+
+    /**
+     * Jwt token enhancer token enhancer.
+     *
+     * @return the token enhancer
+     */
+    @Bean
+    @ConditionalOnBean(TokenEnhancer.class)
+    public TokenEnhancer jwtTokenEnhancer() {
+        jwtTokenEnhancer = new JwtTokenEnhancer();
+        return jwtTokenEnhancer;
+    }
+
+
+
+    /**
+     * 退出时的处理策略配置
+     *
+     * @return logout success handler
+     */
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return new DreamerLogoutSuccessHandler();
+    }
 
 
     @Override
@@ -92,54 +149,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         enhancers.add(jwtAccessTokenConverter);
         enhancerChain.setTokenEnhancers(enhancers);
         endpoints.tokenEnhancer(enhancerChain).accessTokenConverter(jwtAccessTokenConverter);
-    }
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-    /**
-     * Jwt token store token store.
-     *
-     * @return the token store
-     */
-    @Bean
-    public TokenStore jwtTokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter);
+        endpoints.exceptionTranslator(dreamerWebResponseExceptionTranslator);
     }
 
-    /**
-     * Jwt access token converter jwt access token converter.
-     *
-     * @return the jwt access token converter
-     */
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(oAuth2Properties.getJwtSigningKey());
-        return converter;
-    }
-
-    /**
-     * Jwt token enhancer token enhancer.
-     *
-     * @return the token enhancer
-     */
-    @Bean
-    @ConditionalOnBean(TokenEnhancer.class)
-    public TokenEnhancer jwtTokenEnhancer() {
-        return new JwtTokenEnhancer();
-    }
-
-
-
-    /**
-     * 退出时的处理策略配置
-     *
-     * @return logout success handler
-     */
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        return new DreamerLogoutSuccessHandler();
-    }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurity
  * @author zy
  * @date 2020/9/18
  * <p>
- *  OAuth2异常处理
+ *  OAuth2表达式控制
  */
 @Configuration
 public class PcSecurityExpressionHandler extends OAuth2WebSecurityExpressionHandler {

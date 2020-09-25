@@ -1,6 +1,7 @@
 package com.wimp.dreamer.security.auth.validate.processor;
 
 import com.wimp.dreamer.security.auth.validate.enums.ValidateCodeType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.ServletWebRequest;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.web.context.request.ServletWebRequest;
  * <p>
  *  三方校验处理器
  */
+@Component("thirdCodeProcessor")
 public class ThirdCodeProcessor implements ValidateCodeProcessor {
 
     @Override

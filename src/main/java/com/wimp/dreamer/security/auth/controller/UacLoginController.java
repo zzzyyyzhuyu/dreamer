@@ -93,7 +93,7 @@ public class UacLoginController extends BaseController<UserBiz, User> {
         rsp.setContentType("image/jpeg");
         String capText = producer.createText();
         try {
-            redisUtil.set(SecurityConstants.IMAGE_CODE_PREFIX + vcodeId, capText, 300);
+            redisUtil.set(SecurityConstants.IMAGE_CODE_PREFIX + vcodeId, capText, 3000);
         } catch (Exception e) {
             logger.error("验证码存取异常：",e);
         }

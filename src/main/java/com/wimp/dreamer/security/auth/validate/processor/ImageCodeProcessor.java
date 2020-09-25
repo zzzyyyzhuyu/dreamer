@@ -5,6 +5,7 @@ import com.wimp.dreamer.security.auth.constant.SecurityConstants;
 import com.wimp.dreamer.security.auth.exception.ValidateCodeException;
 import com.wimp.dreamer.security.auth.validate.enums.ValidateCodeType;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  * <p>
  *  图片验证码类型处理器
  */
+@Component("imageCodeProcessor")
 public class ImageCodeProcessor implements ValidateCodeProcessor {
 
     @Resource

@@ -47,8 +47,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     private static final String BEARER_TOKEN_TYPE = "Basic ";
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                        Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith(BEARER_TOKEN_TYPE)) {
             throw new UnapprovedClientAuthenticationException("请求头中无client信息");

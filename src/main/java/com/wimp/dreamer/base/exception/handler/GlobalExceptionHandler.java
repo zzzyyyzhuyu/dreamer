@@ -7,9 +7,8 @@ import com.wimp.dreamer.base.exception.auth.UserTokenException;
 import com.wimp.dreamer.base.exception.constant.ExceptionConstant;
 import com.wimp.dreamer.base.msg.BaseResponse;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,9 +18,8 @@ import javax.servlet.http.HttpServletResponse;
  * <p>
  * 全局异常处理 
  */
-@ControllerAdvice("com.wimp.dreamer")
-@ResponseBody
 @Log4j2
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientTokenException.class)

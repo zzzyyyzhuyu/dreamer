@@ -8,6 +8,7 @@ import com.wimp.dreamer.security.auth.domain.SysUserAuthentication;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
 import org.springframework.security.oauth2.provider.*;
@@ -42,6 +43,9 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
     private UserBiz userBiz;
 
     @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Resource
     private AuthorizationServerTokenServices authorizationServerTokenServices;
 
     private static final String BEARER_TOKEN_TYPE = "Basic ";
@@ -61,7 +65,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
         ClientDetails clientDetails = clientDetailsService.loadClientByClientId(clientId);
         if (clientDetails == null) {
             throw new UnapprovedClientAuthenticationException("clientId对应的配置信息不存在:" + clientId);
-        } else if (!StringUtils.equals(clientDetails.getClientSecret(), clientSecret)) {
+        } else if (!bCryptPasswordEncoder.matches(clientSecret,clientDetails.getClientSecret())) {
             throw new UnapprovedClientAuthenticationException("clientSecret不匹配:" + clientId);
         }
 

@@ -1,6 +1,7 @@
 package com.wimp.dreamer.security.auth.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.code.kaptcha.Producer;
 import com.wimp.dreamer.base.msg.ObjectRestResponse;
 import com.wimp.dreamer.base.utils.RedisUtil;
@@ -11,6 +12,7 @@ import com.wimp.dreamer.security.auth.constant.SecurityConstants;
 import com.wimp.dreamer.security.auth.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -25,6 +27,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 /**
  * 登录Token相关
@@ -42,6 +45,9 @@ public class UacLoginController extends BaseController<UserBiz, User> {
     private RedisUtil redisUtil;
 
     @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Resource
     private ClientDetailsService clientDetailsService;
     private static final String BEARER_TOKEN_TYPE = "Basic ";
 
@@ -54,9 +60,9 @@ public class UacLoginController extends BaseController<UserBiz, User> {
      * @return the wrapper
      */
     @GetMapping(value = "/auth/user/refreshToken")
-    public ObjectRestResponse<String> refreshToken(HttpServletRequest request, @RequestParam(value = "refreshToken")
+    public ObjectRestResponse<Map> refreshToken(HttpServletRequest request, @RequestParam(value = "refreshToken")
             String refreshToken, @RequestParam(value = "accessToken") String accessToken) {
-        String token;
+        Map tokenMap;
         try {
             String header = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (header == null || !header.startsWith(BEARER_TOKEN_TYPE)) {
@@ -72,16 +78,19 @@ public class UacLoginController extends BaseController<UserBiz, User> {
 
             if (clientDetails == null) {
                 throw new UnapprovedClientAuthenticationException("clientId对应的配置信息不存在:" + clientId);
-            } else if (!StringUtils.equals(clientDetails.getClientSecret(), clientSecret)) {
+            } else if (!bCryptPasswordEncoder.matches(clientSecret,clientDetails.getClientSecret())) {
                 throw new UnapprovedClientAuthenticationException("clientSecret不匹配:" + clientId);
             }
 
-            token = this.baseBiz.refreshToken(accessToken, refreshToken, request);
+            String token = this.baseBiz.refreshToken(accessToken, refreshToken, request);
+            ObjectMapper objectMapper = new ObjectMapper();
+            tokenMap = objectMapper.readValue(token, Map.class);
+
         } catch (Exception e) {
             logger.error("refreshToken={}", e.getMessage(), e);
-            return new ObjectRestResponse<>(403, "", "", false);
+            return new ObjectRestResponse<>(403, "", null, false);
         }
-        return ObjectRestResponse.ok(token);
+        return ObjectRestResponse.ok(tokenMap);
     }
 
     @RequestMapping(value = "/auth/user/getVcode")

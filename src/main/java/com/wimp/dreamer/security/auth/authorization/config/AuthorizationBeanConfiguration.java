@@ -79,4 +79,6 @@ public class AuthorizationBeanConfiguration {
     public LogoutSuccessHandler logoutSuccessHandler() {
         return new DreamerLogoutSuccessHandler();
     }
+
+
 }

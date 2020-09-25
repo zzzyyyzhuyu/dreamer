@@ -55,14 +55,14 @@ dreamer:
     oauth2:
       accessTokenValidateSeconds: 7200
       refreshTokenValiditySeconds: 2592000
-      clientSecret: dreamClientSecret
+      clientSecret: dreamerClientSecret
       scope: "*"
       clientIds: dreamer-client-auth
 security:
   oauth2:
     client:
       clientId: dreamer-client-auth
-      clientSecret: dreamClientSecret
+      clientSecret: dreamerClientSecret
       access-token-uri: http://127.0.0.1:${server.port}/oauth/token
       user-authorization-uri: http://127.0.0.1:${server.port}/oauth/authorize
     resource:

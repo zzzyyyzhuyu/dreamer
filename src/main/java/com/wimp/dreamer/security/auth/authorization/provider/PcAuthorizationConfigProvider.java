@@ -19,7 +19,7 @@ public class PcAuthorizationConfigProvider implements AuthorizationConfigProvide
     public boolean config(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry config) {
         config.antMatchers(SecurityConstants.DEFAULT_UNAUTHENTICATION_URL,SecurityConstants.DEFAULT_SIGN_IN_PROCESSING_URL_THIRD,
                 SecurityConstants.DEFAULT_VALIDATE_CODE_URL_PREFIX + "/*", "/health","/health/**",
-                "/druid/**", "/auth/**", "/swagger-ui.html", "/swagger-resources/**","/api/applications" ,"/v2/api-docs").permitAll();
+                "/druid/**","/oauth/**","/auth/**", "/swagger-ui.html", "/swagger-resources/**","/api/applications" ,"/v2/api-docs").permitAll();
         return false;
     }
 }

@@ -1,7 +1,6 @@
 package com.wimp.dreamer.security.auth.exception.translator;
 
 import com.wimp.dreamer.base.msg.BaseResponse;
-import com.wimp.dreamer.base.msg.ObjectRestResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DreamerWebResponseExceptionTranslator implements WebResponseExceptionTranslator {
     @Override
-    public ResponseEntity translate(Exception e) throws Exception {
+    public ResponseEntity translate(Exception e) {
         log.error("OAuh2 异常："+e);
         BaseResponse baseResponse = new BaseResponse(HttpStatus.UNAUTHORIZED.value(),e.getMessage());
         return new ResponseEntity(baseResponse,HttpStatus.UNAUTHORIZED);

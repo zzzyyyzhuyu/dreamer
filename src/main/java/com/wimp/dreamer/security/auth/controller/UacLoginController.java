@@ -54,7 +54,8 @@ public class UacLoginController extends BaseController<UserBiz, User> {
      * @return the wrapper
      */
     @GetMapping(value = "/auth/user/refreshToken")
-    public ObjectRestResponse<String> refreshToken(HttpServletRequest request, @RequestParam(value = "refreshToken") String refreshToken, @RequestParam(value = "accessToken") String accessToken) {
+    public ObjectRestResponse<String> refreshToken(HttpServletRequest request, @RequestParam(value = "refreshToken")
+            String refreshToken, @RequestParam(value = "accessToken") String accessToken) {
         String token;
         try {
             String header = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -93,7 +94,7 @@ public class UacLoginController extends BaseController<UserBiz, User> {
         rsp.setContentType("image/jpeg");
         String capText = producer.createText();
         try {
-            redisUtil.set(SecurityConstants.IMAGE_CODE_PREFIX + vcodeId, capText, 3000);
+            redisUtil.set(SecurityConstants.IMAGE_CODE_PREFIX + vcodeId, capText, 300);
         } catch (Exception e) {
             logger.error("验证码存取异常：",e);
         }

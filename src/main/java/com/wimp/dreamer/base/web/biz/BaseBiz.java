@@ -191,8 +191,9 @@ public abstract class BaseBiz<M extends Mapper<T>, T>{
                 break;
             case WebConstant.OP.IN:
                 if (value != null) {
-                    if (value instanceof ArrayList)
+                    if (value instanceof ArrayList) {
                         criteria.andIn(columnName, (ArrayList<?>) value);
+                    }
                 }
                 break;
             case WebConstant.OP.BETWEEN:
@@ -213,8 +214,9 @@ public abstract class BaseBiz<M extends Mapper<T>, T>{
                 break;
             case WebConstant.OP.NOT_IN:
                 if (value != null) {
-                    if (value instanceof ArrayList)
+                    if (value instanceof ArrayList) {
                         criteria.andNotIn(columnName, (ArrayList<?>) value);
+                    }
                 }
                 break;
             case WebConstant.OP.ORDER:
@@ -261,14 +263,15 @@ public abstract class BaseBiz<M extends Mapper<T>, T>{
         Example example = new Example(clazz);
         Example.Criteria criteria = example.createCriteria();
         for (String p : ps) {
-            Object fie = null;
+            Object fie;
             try {
                 fie = getFieldValueByFieldName(p, entity);
             } catch (Exception e) {//如果没有该属性，则返回
                 throw new BaseException(ErrorCode.GL99990100);
             }
-            if (fie != null)
+            if (fie != null) {
                 criteria.andEqualTo(p, fie);
+            }
         }
         if (isUpdate) {
             EntityColumn pkColumn = EntityHelper.getPKColumns(entity.getClass()).iterator().next();
@@ -276,17 +279,15 @@ public abstract class BaseBiz<M extends Mapper<T>, T>{
             criteria.andNotEqualTo(pkColumn.getProperty(), val);
         }
         int count = selectCountByExample(example);
-        if (count > 0)
-            return true;
-        return false;
+        return count>0;
     }
 
     /**
      * 根据属性名获取属性值,通过get方法
      *
-     * @param fieldName
-     * @param object
-     * @return
+     * @param fieldName 属性名
+     * @param object 参数类型
+     * @return 返回属性值
      */
     private Object getFieldValueByFieldName(String fieldName, Object object) {
         try {

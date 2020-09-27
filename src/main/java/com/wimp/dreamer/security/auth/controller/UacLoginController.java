@@ -82,9 +82,7 @@ public class UacLoginController extends BaseController<UserBiz, User> {
                 throw new UnapprovedClientAuthenticationException("clientSecret不匹配:" + clientId);
             }
 
-            String token = this.baseBiz.refreshToken(accessToken, refreshToken, request);
-            ObjectMapper objectMapper = new ObjectMapper();
-            tokenMap = objectMapper.readValue(token, Map.class);
+            tokenMap = this.baseBiz.refreshToken(accessToken, refreshToken, request);
 
         } catch (Exception e) {
             logger.error("refreshToken={}", e.getMessage(), e);

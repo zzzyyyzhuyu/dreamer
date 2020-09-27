@@ -1,6 +1,5 @@
 package com.wimp.dreamer.security.auth.authorization.config;
 
-import com.wimp.dreamer.security.auth.authorization.handler.DreamerLogoutSuccessHandler;
 import com.wimp.dreamer.security.auth.authorization.properties.OAuth2Properties;
 import com.wimp.dreamer.security.auth.authorization.token.JwtTokenEnhancer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +12,6 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.annotation.Resource;
 
@@ -67,18 +65,5 @@ public class AuthorizationBeanConfiguration {
     public TokenEnhancer jwtTokenEnhancer() {
         return new JwtTokenEnhancer();
     }
-
-
-
-    /**
-     * 退出时的处理策略配置
-     *
-     * @return logout success handler
-     */
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        return new DreamerLogoutSuccessHandler();
-    }
-
 
 }

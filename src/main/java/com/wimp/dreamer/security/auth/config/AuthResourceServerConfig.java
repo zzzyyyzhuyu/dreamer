@@ -2,6 +2,7 @@ package com.wimp.dreamer.security.auth.config;
 
 import com.wimp.dreamer.security.auth.authentication.config.FormAuthenticationConfig;
 import com.wimp.dreamer.security.auth.authentication.config.ThirdAuthenticationConfig;
+import com.wimp.dreamer.security.auth.authorization.handler.DreamerLogoutSuccessHandler;
 import com.wimp.dreamer.security.auth.authorization.manager.AuthorizationConfigManager;
 import com.wimp.dreamer.security.auth.exception.translator.DreamerWebResponseExceptionTranslator;
 import com.wimp.dreamer.security.auth.validate.config.ValidateCodeSecurityConfig;
@@ -62,6 +63,9 @@ public class AuthResourceServerConfig implements ResourceServerConfigurer {
     @Resource
     private DataSource dataSource;
 
+    @Resource
+    private DreamerLogoutSuccessHandler dreamerLogoutSuccessHandler;
+
     /**
      * 记住我功能的token存取器配置
      *
@@ -86,6 +90,11 @@ public class AuthResourceServerConfig implements ResourceServerConfigurer {
     public void configure(HttpSecurity http) throws Exception {
         formAuthenticationConfig.configure(http);
         http.headers().frameOptions().disable();
+        http.logout()
+                .logoutSuccessHandler(dreamerLogoutSuccessHandler)
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .permitAll();
         http.apply(validateCodeSecurityConfig)
                 .and().apply(thirdAuthenticationConfig).and()
                 .exceptionHandling().accessDeniedHandler(pcAccessDeniedHandler)

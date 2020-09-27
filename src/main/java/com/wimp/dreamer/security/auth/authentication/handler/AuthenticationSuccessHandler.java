@@ -77,6 +77,7 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
 
         OAuth2AccessToken token = authorizationServerTokenServices.createAccessToken(oAuth2Authentication);
         SysUserAuthentication principal = (SysUserAuthentication) authentication.getPrincipal();
+        //存储用户信息入redis,为用户注销做准备
         userBiz.handlerLoginData(token, principal);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write((objectMapper.writeValueAsString(ObjectRestResponse.ok(token))));

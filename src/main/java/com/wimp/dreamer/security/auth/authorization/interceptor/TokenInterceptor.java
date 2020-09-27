@@ -1,5 +1,6 @@
 package com.wimp.dreamer.security.auth.authorization.interceptor;
 
+import com.wimp.dreamer.base.exception.auth.ClientTokenException;
 import com.wimp.dreamer.base.exception.enums.ErrorCode;
 import com.wimp.dreamer.base.utils.RedisUtil;
 import com.wimp.dreamer.base.utils.ThreadLocalMap;
@@ -51,11 +52,14 @@ public class TokenInterceptor implements HandlerInterceptor {
         if(StringUtils.isBlank(authorization) || !authorization.contains("Bearer")){
             return true;
         }
+        /**
+         * jwt类型的token本身无状态，无法根据token判断用户是否退出登录，此处增加redis进行登录用户校验
+         * 登录用户不存在时，即用户注销
+         */
         String token = StringUtils.substringAfter(authorization, "Bearer ");
-        //TODO oauth2过期机制
         LoginAuthDto loginUser = (LoginAuthDto) redisUtil.get(RedisUtil.ACCESS_TOKEN_KEY+token);
         if (loginUser == null) {
-            return true;
+            throw new ClientTokenException("token失效");
         }
         ThreadLocalMap.put(GlobalConstant.Sys.TOKEN_AUTH_DTO, loginUser);
         return true;

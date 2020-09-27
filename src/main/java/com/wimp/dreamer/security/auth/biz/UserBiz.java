@@ -5,6 +5,9 @@ import com.arronlong.httpclientutil.HttpClientUtil;
 import com.arronlong.httpclientutil.common.HttpConfig;
 import com.arronlong.httpclientutil.common.HttpHeader;
 import com.arronlong.httpclientutil.exception.HttpProcessException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wimp.dreamer.base.exception.auth.ClientTokenException;
 import com.wimp.dreamer.base.utils.RedisUtil;
 import com.wimp.dreamer.base.web.biz.BaseBiz;
 import com.wimp.dreamer.security.auth.authorization.properties.OAuth2Properties;
@@ -15,6 +18,7 @@ import com.wimp.dreamer.security.auth.exception.UserDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,6 +39,9 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserBiz extends BaseBiz<Mapper<User>, User> implements UserDetailsService {
+
+    @Value("${dreamer.oauth2.oauth2.accessTokenValidateSeconds:7200}")
+    private long accessTokenValidateSeconds;
 
     @Resource
     private OAuth2Properties oAuth2Properties;
@@ -65,7 +72,7 @@ public class UserBiz extends BaseBiz<Mapper<User>, User> implements UserDetailsS
      * @return 刷新后的token
      * @throws HttpProcessException http异常
      */
-    public String refreshToken(String accessToken, String refreshToken, HttpServletRequest request) throws HttpProcessException {
+    public Map<String,Object> refreshToken(String accessToken, String refreshToken, HttpServletRequest request) throws HttpProcessException, JsonProcessingException {
         String token;
         Map<String, Object> map = new HashMap<>(2);
         map.put("grant_type", "refresh_token");
@@ -76,7 +83,16 @@ public class UserBiz extends BaseBiz<Mapper<User>, User> implements UserDetailsS
                 authorization(request.getHeader(HttpHeaders.AUTHORIZATION)).build();
         HttpConfig config = HttpConfig.custom().headers(headers).url(oAuth2Properties.getTokenRefreshUrl()).map(map);
         token = HttpClientUtil.post(config);
-        return token;
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String,Object>tokenMap = objectMapper.readValue(token, Map.class);
+        //刷新redis中的用户信息
+        LoginAuthDto loginUser = (LoginAuthDto) redisUtil.get(RedisUtil.ACCESS_TOKEN_KEY+accessToken);
+        if (loginUser == null) {
+            throw new ClientTokenException("token失效");
+        }
+        redisUtil.set(RedisUtil.ACCESS_TOKEN_KEY + refreshToken,
+                loginUser, accessTokenValidateSeconds);
+        return tokenMap;
     }
 
     /**
@@ -87,6 +103,7 @@ public class UserBiz extends BaseBiz<Mapper<User>, User> implements UserDetailsS
      */
     public void handlerLoginData(OAuth2AccessToken token, SysUserAuthentication principal) {
         LoginAuthDto authDto = new LoginAuthDto(principal.getId(), principal.getUsername());
-        redisUtil.set(RedisUtil.ACCESS_TOKEN_KEY + token.getValue(), authDto, 7200);
+        redisUtil.set(RedisUtil.ACCESS_TOKEN_KEY + token.getValue(),
+                authDto, accessTokenValidateSeconds);
     }
 }
